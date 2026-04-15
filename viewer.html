@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>VTU Internship Diary</title>
+
+    <style>
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+
+      body {
+        font-family: "Times New Roman", serif;
+        font-size: 12pt;
+        line-height: 1.8;
+        margin: 0;
+      }
+
+      .page {
+        page-break-after: always;
+        padding: 20px;
+      }
+
+      .page:last-child {
+        page-break-after: auto;
+      }
+
+      .desc {
+        text-align: justify;
+      }
+
+      ul {
+        margin-top: 5px;
+        margin-bottom: 10px;
+        padding-left: 20px;
+      }
+
+      p {
+        margin: 6px 0;
+      }
+
+      .signature {
+        margin-top: 60px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .sig {
+        width: 40%;
+        text-align: center;
+        border-top: 1px solid black;
+        padding-top: 5px;
+        font-weight: bold;
+      }
+
+      .print-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background: #0056b3;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      @media print {
+        .print-btn {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="output"></div>
+
+    <button class="print-btn" onclick="window.print()">
+      Print / Save as PDF
+    </button>
+
+    <script>
+      const raw = localStorage.getItem("diaryData");
+
+      if (!raw) {
+        document.body.innerHTML = "<h3>No data found</h3>";
+      } else {
+        const data = JSON.parse(raw);
+
+        const renderEntry = (e) => {
+          const skills = (e.skills || "")
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+
+          const learnings = (e.learnings || "")
+            .split(/\n|(?<=\.)\s+/)
+            .map((l) => l.trim())
+            .filter(Boolean);
+
+          return `
+            <div class="page">
+
+              <p><b>Date:</b> ${e.date}</p>
+              <p><b>Number of hours:</b> ${e.hours}</p>
+
+              <p><b>Skills:</b></p>
+              <ul>
+                ${skills.map((s) => `<li>${s}</li>`).join("")}
+              </ul>
+
+              <p><b>Description:</b></p>
+              <p class="desc">${e.work_summary}</p>
+
+              <p><b>Learnings/Outcomes:</b></p>
+              <ul>
+                ${learnings.map((l) => `<li>${l}</li>`).join("")}
+              </ul>
+
+              <div class="signature">
+                <div class="sig">Signature of External Guide</div>
+                <div class="sig">Signature of Internal Guide</div>
+              </div>
+
+            </div>
+          `;
+        };
+
+        const html = `${data.map(renderEntry).join("")}`;
+
+        document.getElementById("output").innerHTML = html;
+      }
+    </script>
+  </body>
+</html>
