@@ -81,6 +81,15 @@
     </button>
 
     <script>
+      function escapeHTML(str) {
+        return String(str ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
       const raw = localStorage.getItem("diaryData");
 
       if (!raw) {
@@ -91,19 +100,21 @@
         const renderEntry = (e) => {
           const skills = (e.skills || "")
             .split(",")
-            .map((s) => s.trim())
+            .map((s) => escapeHTML(s.trim()))
             .filter(Boolean);
 
           const learnings = (e.learnings || "")
             .split(/\n|(?<=\.)\s+/)
-            .map((l) => l.trim())
+            .map((l) => escapeHTML(l.trim()))
             .filter(Boolean);
+
+          const description = escapeHTML(e.work_summary || "");
 
           return `
             <div class="page">
 
-              <p><b>Date:</b> ${e.date}</p>
-              <p><b>Number of hours:</b> ${e.hours}</p>
+              <p><b>Date:</b> ${escapeHTML(e.date)}</p>
+              <p><b>Number of hours:</b> ${e.hours ?? ""}</p>
 
               <p><b>Skills:</b></p>
               <ul>
@@ -111,7 +122,7 @@
               </ul>
 
               <p><b>Description:</b></p>
-              <p class="desc">${e.work_summary}</p>
+              <p class="desc">${description}</p>
 
               <p><b>Learnings/Outcomes:</b></p>
               <ul>
@@ -128,7 +139,6 @@
         };
 
         const html = `${data.map(renderEntry).join("")}`;
-
         document.getElementById("output").innerHTML = html;
       }
     </script>
