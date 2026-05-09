@@ -98,10 +98,12 @@
         const data = JSON.parse(raw);
 
         const renderEntry = (e) => {
-          const skills = (e.skills || "")
-            .split(",")
-            .map((s) => escapeHTML(s.trim()))
-            .filter(Boolean);
+          const skills = Array.isArray(e.skills)
+            ? e.skills
+            : (e.skills || "")
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean);
 
           const learnings = (e.learnings || "")
             .split(/\n|(?<=\.)\s+/)
